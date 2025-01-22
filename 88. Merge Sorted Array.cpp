@@ -23,7 +23,6 @@ public:
             n--;
             end_index--;
         }
-
     }
 
     /*
