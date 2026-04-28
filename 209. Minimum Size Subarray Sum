@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int fastIndex=0, slowIndex=0;
+        int sum=0,ans=INT_MAX;
+
+        for(fastIndex=0; fastIndex<nums.size(); fastIndex++){
+            sum+=nums[fastIndex];
+
+            while(sum>=target){
+                ans= (fastIndex-slowIndex+1)<ans ? (fastIndex-slowIndex+1) : ans; 
+
+                sum-=nums[slowIndex];
+                slowIndex++;
+            }
+        }
+
+        return ans == INT_MAX ? 0 : ans;
+
+    }
+};
+
+// sliding windows for迴圈固定右邊，內部再一個while迴圈調整左邊。
