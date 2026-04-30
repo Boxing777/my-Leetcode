@@ -1,0 +1,4 @@
+```cpp
+int a = 10;
+vector&lt;int&gt; nums;
+```
