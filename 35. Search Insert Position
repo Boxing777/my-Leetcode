@@ -1,0 +1,59 @@
+一、 題目深入解析
+條件：陣列已經「由小到大排序好」，且數字「不重複」。
+目標：
+如果 target 在陣列裡，回傳它的索引。
+如果 target 不在裡面，回傳它「應該」被插入的位置索引。
+核心約束：必須在 O(logn)
+ 時間複雜度內完成。這是一個強烈的訊號，告訴你絕對不能用迴圈從頭到尾掃描一遍 O(n)，一定要用二分搜尋。
+二、 解題思路：二分搜尋 (Binary Search)
+普通的二分搜尋是找「等於」target 的位置，而這題要求的是「等於或第一個大於」target 的位置。
+設定範圍：
+使用兩個指標 left = 0 和 right = n - 1。
+中間切半：
+找出中間點 mid。
+如果 nums[mid] == target：太好了，直接回傳 mid。
+如果 nums[mid] < target：代表 target 一定在 mid 的右邊，所以把 left 移到 mid + 1。
+如果 nums[mid] > target：代表 target 可能就是 mid 這個位置，或者是 mid 的左邊，所以把 right 移到 mid - 1。
+找不到時的奇妙特點：
+當 while 迴圈結束（通常是 left > right）仍沒找到 target 時，你會發現一個神奇的規律：left 指標指向的位置，正好就是該元素應該被插入的位置。
+為什麼？因為 left 代表了「第一個大於或等於 target」的候選位置。
+三、 實作技巧
+雖然不提供程式碼，但在實作二分搜尋時，有幾個細節能幫你寫出更穩健的程式：
+1. 計算 mid 的防溢位寫法
+一般人寫 (left + right) / 2，但如果 left 和 right 都很大，相加可能會超過 int 的範圍。
+技巧：建議寫成 mid = left + (right - left) / 2;。這在邏輯上是一樣的，但能避免加法溢位。
+2. 迴圈條件的選擇
+常見的有兩種體系：
+閉區間 [left, right]：while (left <= right)。
+當 nums[mid] < target 時，left = mid + 1。
+當 nums[mid] > target 時，right = mid - 1。
+結束後：left 就是答案。
+這是最直覺也最推薦給初學者的寫法。
+3. 邊界測試
+在腦中模擬以下兩種極端情況：
+比所有人都大：target 應該插入在 nums.size() 的位置。
+比所有人都小：target 應該插入在 0 的位置。
+使用上述的 left 指標邏輯，這兩種情況都能被完美處理。
+4. O(logn)的直觀感覺
+如果陣列有 1000 個元素，O(n) 要找 1000 次，但 O(log n) 只需要約 10 次。
+如果你發現你在程式裡寫了 for 迴圈跑遍整個陣列，那就不符合題目要求的 O(logn)了。
+
+'''
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        int left=0,right=nums.size()-1;
+
+        while(left<=right){
+            int mid=(left+right)/2;
+
+            if(target==nums[mid]) return mid;
+            else if(target>nums[mid]) left=mid+1;
+            else right=mid-1;
+        }
+
+
+        return left;
+    }
+};
+'''
