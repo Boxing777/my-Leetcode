@@ -39,7 +39,7 @@
 如果題目改成「三個籃子」（最多 3 種水果），你的程式碼需要改動哪裡？
 如果不用 unordered_map，還有什麼方式可以記錄水果種類？（提示：如果水果種類的數值範圍很小，可以用陣列代替）。
 
-'''
+'''cpp
 class Solution {
 public:
     int totalFruit(vector<int>& fruits) {
