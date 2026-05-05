@@ -1,0 +1,52 @@
+/*
+解題思路：尋找左右邊界
+既然要找起始和結束，我們可以把問題拆解成兩個獨立的二分搜尋任務：
+1. 尋找左邊界 (First Occurrence)
+當 nums[mid] == target 時，普通二分搜尋會直接回傳。
+關鍵邏輯：但現在我們要找最左邊的那一個。所以當 nums[mid] == target 時，我們不要停止，而是記錄下目前的 mid 作為潛在答案，然後繼續往左半部搜尋（即 right = mid - 1），看看左邊還有沒有同樣的數字。
+2. 尋找右邊界 (Last Occurrence)
+同理，當 nums[mid] == target 時，我們記錄下目前的 mid，然後繼續往右半部搜尋（即 left = mid + 1），看看右邊還有沒有同樣的數字。
+3. 組合結果
+先找左邊界，如果左邊界找出來是 -1（代表根本沒這個數），那右邊界也不用找了，直接回傳 [-1, -1]。
+如果找到了左邊界，再找右邊界。最後回傳這兩個索引。
+*/
+
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int left=-1, right=-1;
+        bool flag=true; // right
+
+        right=findBound(nums, target, flag);
+
+        flag=false; // left
+        left=findBound(nums, target, flag);
+
+        return {left, right};
+    }
+
+private:
+    int findBound(vector<int>& nums, int target, bool flag){
+        int left=0, right=nums.size()-1;
+        int bound=-1;
+
+        while(left<=right){
+            int mid=(left+right)/2;
+            if(target==nums[mid]){
+                if(flag){
+                    bound=mid;
+                    left=mid+1;
+                }else{
+                    bound=mid;
+                    right=mid-1;
+                }
+            }else if(target>nums[mid]){
+                left=mid+1;
+            }else{
+                right=mid-1;
+            }
+        }
+        
+        return bound;
+    }
+};
