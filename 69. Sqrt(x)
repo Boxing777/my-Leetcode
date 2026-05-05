@@ -1,0 +1,50 @@
+/*
+解題思路：二分搜尋法
+我們要在 0 到 x 的範圍內，找出一個最大的整數 k，使得 k^2 ≤ x。
+
+設定邊界：
+左邊界 left = 0。
+右邊界 right = x。
+
+二分迭代：
+計算中間值 mid。
+計算 mid 的平方並與 x 比較：
+如果 mid * mid == x：mid 就是我們要的精確答案。
+如果 mid * mid < x：代表 mid 有可能是答案（因為要向下取整），但可能還有更大的整數也符合條件。因此，我們先記錄下目前的 mid，然後將 left 往右移 (mid + 1) 繼續找。
+如果 mid * mid > x：代表 mid 太大了，答案一定在左邊，將 right 往左移 (mid - 1)。
+結束條件：
+當 left > right 時停止，最後記錄下的那個 mid（或者是搜尋結束時的 right）即為答案。
+二、 實作技巧（非常重要）
+這題雖然是 Easy，但實作上有兩個「坑」需要特別注意：
+1. 防止溢位 (Integer Overflow)
+這是本題最核心的挑戰。x 的最大值是 2^31−1。如果 mid 是 10^5，那麼 mid * mid 就會達到 10^10，這會超過 C++ int 的範圍。
+
+技巧 A：使用 long long 型別來計算 mid * mid。
+技巧 B（更推薦）：將乘法改成除法比較。不要寫 if (mid * mid <= x)，改寫成 if (mid <= x / mid)。這樣可以完全避開溢位問題（注意要處理 mid = 0 的情況以免除以零）。
+
+2. 邊界情況
+當 x=0 或 x=1 時，結果就是 x 本身。如果你的 mid 計算方式是 left + (right - left) / 2，且 left = 0, right = 0 時，要注意迴圈是否能正確執行或結束。
+*/
+
+class Solution {
+public:
+    int mySqrt(int x) {
+        int left=0, right=x;
+        int ans=0;
+
+        while(left<=right){
+            long long int mid=(left+right)/2;
+
+            if(mid*mid==x){
+                return mid;
+            }else if(mid*mid<x){
+                ans=mid;
+                left=mid+1;
+            }else{
+                right=mid-1;
+            }
+            
+        }
+        return ans;
+    }
+};
