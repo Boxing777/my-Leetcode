@@ -1,0 +1,68 @@
+/*
+一、 解題思路：逆向遍歷 (Reverse Traversal)
+為什麼要「從後往前」走？
+如果從前往後走，你遇到一個字元，不知道它會不會被後面的 # 刪掉。
+但如果從後往前走，一旦你先看到 #，你就知道左邊即將出現的字元必須被跳過。
+核心邏輯：
+準備兩個指標 i 和 j，分別指向字串 s 和 t 的末尾。
+準備兩個計數器 skipS 和 skipT，紀錄目前累積了幾個退格需要執行。
+尋找下一個「有效字元」：
+對 s 進行迴圈：
+如果是 #，skipS++，指標左移。
+如果不是 # 但 skipS > 0，代表這個字元會被刪掉，所以 skipS--，指標左移。
+直到遇到一個「不是 # 且不需要被跳過」的字元，這就是螢幕上會顯示的字元。
+對 t 執行同樣的操作。
+比對：
+比對這兩個「有效字元」是否相同。
+重複直到兩個字串都檢查完。
+二、 實作技巧
+巢狀 while 迴圈：外層 while 控制整個比對流程，內層兩個 while 分別去找 s 和 t 的下一個有效字元。
+邊界判斷：
+如果一個指標走完了 (<0)，另一個還沒走完，代表長度不同，回傳 false。
+如果兩個都走完了，回傳 true。
+優點：完全不需要開新字串，空間複雜度是極致的 O(1)。
+*/
+
+class Solution {
+public:
+    bool backspaceCompare(string s, string t) {
+        int i=s.size()-1, j=t.size()-1;
+        int skip_i=0,skip_j=0;
+        
+        while(i>=0||j>=0){
+            while(i>=0){
+                if(s[i]=='#'){
+                    skip_i++;
+                    i--;
+                }else if(skip_i>0){
+                    skip_i--;
+                    i--;
+                }else{
+                    break;
+                }
+            }
+            while(j>=0){
+                if(s[j]=='#'){
+                    skip_j++;
+                    j--;
+                }else if(skip_j>0){
+                    skip_j--;
+                    j--;
+                }else{
+                    break;
+                }
+            }
+
+            if(i>=0&&j>=0){
+                if(s[i]!=s[j]) return false;
+            }else if(i>=0||j>=0){
+                return false;
+            }
+
+            i--;
+            j--;
+        }
+
+        return true;
+    }
+};
