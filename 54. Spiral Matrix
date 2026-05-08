@@ -1,0 +1,66 @@
+/*
+一、 解題思路：邊界縮小法 (Boundary Shrinking)
+我們同樣使用定義「上下左右」四個邊界的方法，這是最穩健的解法：
+初始化邊界：
+top = 0
+bottom = matrix.size() - 1
+left = 0
+right = matrix[0].size() - 1
+螺旋路徑 (右 -> 下 -> 左 -> 上)：
+向右走：遍歷 top 列，從 left 到 right。完成後 top++。
+向下走：遍歷 right 行，從 top 到 bottom。完成後 right--。
+向左走：遍歷 bottom 列，從 right 到 left。完成後 bottom--。
+向上走：遍歷 left 行，從 bottom 到 top。完成後 left++。
+終止條件：
+當 left > right 或 top > bottom 時，代表所有格子都已經讀取完畢。
+
+二、 實作技巧與「陷阱」提醒
+這題在處理 非正方形矩陣 時有一個非常容易出錯的地方：
+1. 關鍵的中間檢查 (The Trap)
+在一個 3×1（三列一行）或 1×3（一列三行）的矩陣中，當你執行完「向右」和「向下」後，可能已經讀取完所有元素了。如果你不加判斷直接執行「向左」和「向上」，就會重複讀取已經讀過的格子。
+技巧：在每一輪中，執行完 top++ 和 right-- 後，最好立刻檢查一次 top <= bottom 和 left <= right 是否仍然成立。如果已經不成立，就直接跳出循環。
+2. 使用 res.size() 控制
+另一個更簡單的做法是：
+先計算總元素個數 total = m * n。
+在每一個 for 迴圈內填入元素後，立刻檢查 res.size() == total。如果相等，直接 return res。這樣可以完全避免重複讀取的邏輯問題。
+3. 座標存取
+水平移動：matrix[top][i] 或 matrix[bottom][i]。
+垂直移動：matrix[i][right] 或 matrix[i][left]。
+*/
+
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> res;
+        int m=matrix.size(), n=matrix[0].size();
+        int top=0, bottom=m-1, left=0, right=n-1;
+
+        while(1){
+            for(int j=left; j<=right; j++){
+                res.push_back(matrix[top][j]);
+            }
+            top++;
+            if(top>bottom) break;
+
+            for(int i=top; i<=bottom; i++){
+                res.push_back(matrix[i][right]);
+            }
+            right--;
+            if(right<left) break;
+
+            for(int j=right; j>=left; j--){
+                res.push_back(matrix[bottom][j]);
+            }
+            bottom--;
+            if(bottom<top) break;
+
+            for(int i=bottom; i>=top; i--){
+                res.push_back(matrix[i][left]);
+            }
+            left++;
+            if(left>right) break;
+        }
+
+        return res;
+    }
+};
