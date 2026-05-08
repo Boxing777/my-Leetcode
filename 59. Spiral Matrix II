@@ -1,73 +1,36 @@
-/*
-一、 解題思路：邊界定義法 (Boundary Method)
-最直覺且不容易出錯的方法是定義 四條邊界，隨著填入數字的過程，不斷縮小這四條邊界。
-想像你有一塊 n×n 的空地，你要圍著邊緣走，走完一圈後牆壁就往內縮一格：
-定義四個邊界指標：
-top：目前尚未填充的最上方列（初始為 0 ）。
-bottom：目前尚未填充的最下方列（初始為 n−1）。
-left：目前尚未填充的最左方行（初始為 0）。
-right：目前尚未填充的最右方行（初始為 n−1）。
-填充順序 (右 -> 下 -> 左 -> 上)：
-從左往右：填充 top 這列，從 left 到 right。填充完後，這列就滿了，所以 top++（最上方邊界下移）。
-從上往下：填充 right 這行，從 top 到 bottom。填充完後，這行就滿了，所以 right--（最右方邊界左移）。
-從右往左：填充 bottom 這列，從 right 到 left。填充完後，這列就滿了，所以 bottom--（最下方邊界上移）。
-從下往上：填充 left 這行，從 bottom 到 top。填充完後，這行就滿了，所以 left++（最左方邊界右移）。
-終止條件：
-設定一個計數器 num = 1，只要 num <= n * n 就繼續執行。
-或者只要 top <= bottom 且 left <= right 成立就繼續。
-
-二、 實作技巧與避坑指南
-1. 矩陣初始化
-在 C++ 中，先建立一個二維 vector 並預設大小：vector<vector<int>> matrix(n, vector<int>(n))。
-2. 迴圈區間的控制 (最關鍵)
-左閉右閉原則：在填充每一條邊時，建議採用「包含起點也包含終點」的方式。例如：從 left 走進 right 時，迴圈寫 for (int i = left; i <= right; i++)。
-只要你每一條邊都遵循同樣的開閉原則，邏輯就會非常清晰。
-3. 處理奇數與偶數 n
-使用「邊界縮小法」的神奇之處在於，它會自動處理奇數和偶數的情況。
-如果 n 是奇數，最後一圈會縮小到只剩下中間的一個格點，最後一次 num 填入後，邊界就會交錯，迴圈自動停止。
-4. 座標對應
-記住矩陣存取是 matrix[row][col]。
-水平移動時，row 固定（是 top 或 bottom），col 在變。
-垂直移動時，col 固定（是 left 或 right），row 在變。
-*/
-
 class Solution {
 public:
     vector<vector<int>> generateMatrix(int n) {
         vector<vector<int>> res(n, vector<int>(n,0));
-        int startx=0, starty=0;
-        int loop=n/2, offset=1, num=1;
+        int top=0, bottom=n-1, left=0, right=n-1;
+        int num=1, target=n*n;
 
-        while(loop){
-            int i=startx, j=starty;
+        while(num<=target){
+            for(int j=left; j<=right; j++){
+                res[top][j]=num;
+                num++;
+            }
+            top++;
 
-            for(j; j<n-offset; j++){
-                res[i][j]=num;
+            for(int i=top; i<=bottom; i++){
+                res[i][right]=num;
                 num++;
             }
-            for(i; i<n-offset; i++){
-                res[i][j]=num;
-                num++;
-            }
-            for(j; j>starty; j--){
-                res[i][j]=num;
-                num++;
-            }
-            for(i; i>startx; i--){
-                res[i][j]=num;
-                num++;
-            }
+            right--;
 
-            offset++;
-            startx++;
-            starty++;
-            loop--;
+            for(int j=right; j>=left; j--){
+                res[bottom][j]=num;
+                num++;
+            }
+            bottom--;
+
+            for(int i=bottom; i>=top; i--){
+                res[i][left]=num;
+                num++;
+            }
+            left++;
         }
 
-        if(n%2){
-            res[n/2][n/2]=num;
-        }
-        
         return res;
     }
 };
