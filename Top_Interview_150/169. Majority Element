@@ -1,0 +1,95 @@
+/*
+1. 暴力法 (Brute Force)
+思路：兩層迴圈。外層選一個數，內層數它出現幾次。
+複雜度：時間 O(n^2 )，空間 O(1)。
+面試評價：不可行。除非你真的完全沒頭緒，否則不要提這個。
+2. 雜湊表計數法 (Hash Map)
+思路：遍歷陣列，用 unordered_map<int, int> 統計每個數字出現的次數，一旦次數 >n/2 就回傳。
+C++ 技巧：
+unordered_map<int, int> counts;
+for (int num : nums) {
+    if (++counts[num] > nums.size() / 2) return num;
+}
+複雜度：時間 O(n)，空間 O(n)。
+面試評價：標準答案，展示你對基礎資料結構的掌握，但空間複雜度不是最優。
+3. 排序法 (Sorting)
+思路：如果一個數字出現次數超過一半，那它排序後一定會出現在陣列的中點。
+C++ 技巧：
+sort(nums.begin(), nums.end());
+return nums[nums.size() / 2];
+複雜度：時間 O(nlogn)，空間 O(1)（視排序實作而定）。
+面試評價：非常聰明的數學觀察。面試官通常會點頭，然後問你：「能不能不排序做到 O(n)？」
+4. 摩爾投票演算法 (Boyer-Moore Voting) ★ 最推薦
+思路：利用「對拚抵銷」的思想。設一個候選人 cand 和血量 count。遍歷時，若數字相同則血量加 1，不同則減 1（抵銷）。血量歸零就換人。
+C++ 技巧：
+int cand = 0, count = 0;
+for (int num : nums) {
+    if (count == 0) cand = num;
+    count += (num == cand) ? 1 : -1;
+}
+return cand;
+複雜度：時間 O(n)，空間 O(1)。
+面試評價：最優解。如果你能寫出這個並解釋清楚「抵銷」邏輯，這題就拿滿分了。
+5. 位元運算法 (Bit Manipulation)
+思路：整數有 32 位。對於每一位，統計所有數字在該位出現 1 的次數。如果 1 的次數 >n/2，那多數元素的該位一定是 1。
+邏輯：
+跑 32 次迴圈（對應 32 bit）。
+每次遍歷整個陣列。
+組合出最終的整數。
+複雜度：時間 O(32n)（即 O(n)），空間 O(1)。
+面試評價：展示你對底層二進位的理解。雖然比投票法慢，但非常有深度。
+*/
+
+
+2.
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        unordered_map<int, int> map;
+        for(int num: nums){
+            map[num]++;
+            if(map[num]>nums.size()/2) return num;
+        }
+        return 0;
+    }
+};
+
+4.
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        int cand=0, count=0;
+        for(int i=0; i<nums.size(); i++){
+            if(count==0){
+                cand=nums[i];
+            }
+            
+            if(nums[i]!=cand){
+                count--;
+            }else{
+                count++;
+            }
+        }
+        return cand;
+    }
+};
+
+5.
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        int ans=0;
+
+        for(int i=0; i<32; i++){
+            int count=0;
+            for(int num:nums){
+                if((num>>i) & 1) count++;
+            }
+
+            if(count > nums.size()/2){
+                ans |= 1<<i;
+            }
+        }
+        return ans;
+    }
+};
