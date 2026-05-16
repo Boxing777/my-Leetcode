@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int n=nums.size();
+
+        if(n==1) return 0;
+
+        int minHop=1;
+        for(int i=0;i<n;){
+            int next_i=i;
+            int maxReach=i+nums[i];
+            if(maxReach>=n-1) return minHop;
+
+            for(int j=i+1; j<=maxReach; j++){
+                if(j+nums[j] > next_i+nums[next_i]){
+                    next_i=j;
+                }
+            }
+
+            i=next_i;
+            minHop++;
+        }
+
+        return minHop;
+    }
+};
