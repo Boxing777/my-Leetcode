@@ -1,0 +1,33 @@
+解法：從後往前掃
+
+這也是很通用的想法。
+
+因為答案要把後面的單字放前面，所以我們可以直接從字串尾巴開始掃。
+
+
+class Solution {
+public:
+    string reverseWords(string s) {
+        int n=s.size(), i=n-1;
+        string ans="";
+       
+        while(i>=0){
+            int start=0, end=0; 
+
+            while(i>=0 && s[i]==' ') i--;
+            if(i<0) break;
+
+            end=i;
+            while(i>=0 && s[i]!=' ') i--;
+            start=i+1;
+
+            if(!ans.empty()){
+                ans+=' ';
+            }
+            
+            ans+=s.substr(start, end-start+1);
+        }
+
+        return ans;
+    }
+};
