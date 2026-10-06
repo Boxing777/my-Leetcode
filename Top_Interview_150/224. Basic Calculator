@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int calculate(string s) {
+        vector<int> stack;
+        int result=0, sign=1;
+        int i=0;
+
+        while(i<s.size()){
+            if(s[i]==' '){
+                i++;
+            }
+            else if(s[i]=='+'){
+                sign=1;
+                i++;
+            }
+            else if(s[i]=='-'){
+                sign=-1;
+                i++;
+            }
+            else if(s[i]=='('){
+                stack.push_back(result);
+                stack.push_back(sign);
+
+                result=0;
+                sign=1;
+                i++;
+            }
+            else if(s[i]==')'){
+                int oldSign=stack.back();
+                stack.pop_back();
+
+                int oldResult=stack.back();
+                stack.pop_back();
+
+                result = oldSign*result + oldResult;
+                i++;
+            }
+            else if(s[i]>='0' && s[i]<='9'){
+                long long num=0;
+                
+                while(i<s.size() && s[i]>='0' && s[i]<='9'){
+                    num = num*10 + (s[i]-'0');
+                    i++;
+                }
+
+                result += sign*num;
+            }
+        }
+
+        return result;
+    }
+};
